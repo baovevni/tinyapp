@@ -19,20 +19,20 @@ const urlDatabase = {
 };
 
 app.get("/", (req, res) => {
-  res.send("Hello!");
+  res.status(200).send("Hello!");
 });
 
 app.get("/urls.json", (req, res) => {
-  res.json(urlDatabase);
+  res.status(200).json(urlDatabase);
 });
 
 app.get("/urls", (req, res) => {
   const templateVars = { urls: urlDatabase };
-  res.render("urls_index", templateVars);
+  res.status(200).render("urls_index", templateVars);
 })
 
 app.get("/urls/new", (req, res) => {
-  res.render("urls_new");
+  res.status(200).render("urls_new");
 });
 
 app.post("/urls", (req, res) => {
@@ -40,17 +40,20 @@ app.post("/urls", (req, res) => {
   const shortURL = generateRandomString(6);
   const longURL = req.body.longURL;
   urlDatabase[shortURL] = longURL;
-  res.redirect(`/urls/${shortURL}`);
+  res.status(200).redirect(`/urls/${shortURL}`);
 });
 
 app.get("/urls/:id", (req, res) => {
+  // if (req.params.id !== urlDatabase.id){
+  //   res.status(404).write(`${id} does not exist`);
+  // }
   const templateVars = { id: req.params.id, longURL: urlDatabase[req.params.id] };
-  res.render("urls_show", templateVars);
+  res.status(200).render("urls_show", templateVars);
 });
 
 app.get("/u/:id", (req, res) => {
   const longURL = urlDatabase[req.params.id];
-  res.redirect(longURL);
+  res.status(200).redirect(longURL);
 });
 
 app.listen(PORT, () => {
