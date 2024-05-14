@@ -18,6 +18,11 @@ const urlDatabase = {
   "9sm5xK": "http://www.google.com",
 };
 
+app.post("/login", (req, res, next) => {
+  res.cookie('username', req.body.username);
+  res.redirect("/urls");
+});
+
 app.get("/", (req, res) => {
   res.send("Hello!");
 });
