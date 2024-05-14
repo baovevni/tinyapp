@@ -68,9 +68,13 @@ app.get("/u/:id", (req, res) => {
   res.redirect(longURL);
 });
 
-
 app.post("/urls/:id/delete", (req, res) => {
   delete urlDatabase[req.params.id];
+  res.redirect("/urls");
+});
+
+app.post("/logout", (req, res) => {
+  res.clearCookie("username");
   res.redirect("/urls");
 });
 
