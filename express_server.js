@@ -1,6 +1,14 @@
 const express = require("express");
 const app = express();
 const PORT = 8080;
+function generateRandomString(length) {
+  const chars = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
+  let result = "";
+  for (let i = 0; i < length; i++) {
+    result += chars.charAt(Math.floor(Math.random() * chars.length));
+  }
+  return result;
+}
 
 app.set("view engine", "ejs");
 app.use(express.urlencoded({ extended: true }));
@@ -26,6 +34,12 @@ app.get("/urls", (req, res) => {
 app.get("/urls/new", (req, res) => {
   res.render("urls_new");
 });
+
+app.post("/urls", (req, res) => {
+  console.log(req.body); // this will log POST request to the console
+  res.send(generateRandomString(6));
+  res.send("OK"); // this will respond with OK 
+})
 
 app.get("/urls/:id", (req, res) => {
   const templateVars = { id: req.params.id, longURL: urlDatabase[req.params.id] };
