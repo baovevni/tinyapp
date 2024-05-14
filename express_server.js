@@ -37,9 +37,8 @@ app.get("/urls/new", (req, res) => {
 
 app.post("/urls", (req, res) => {
   console.log(req.body); // this will log POST request to the console
-  res.send(generateRandomString(6));
-  res.send("OK"); // this will respond with OK 
-})
+  return res.send(generateRandomString(6));
+});
 
 app.get("/urls/:id", (req, res) => {
   const templateVars = { id: req.params.id, longURL: urlDatabase[req.params.id] };
