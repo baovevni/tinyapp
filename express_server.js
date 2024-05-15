@@ -34,6 +34,9 @@ app.post("/register", (req, res) => {
   res.cookie('user_id', newUser.id);
   res.redirect("/urls");
 });
+app.get("/login", (req, res) => {
+  res.render("login");
+});
 
 app.post("/login", (req, res) => {
   const { email } = req.body;

@@ -19,13 +19,14 @@
             </form>
             <div class="col-auto">
               <% } else { %>
-                <form class="form-inline" action="/login" method="POST">
-                  <div class="form-group mb-2">
-                    <input class="form-control" type="email" name="email" placeholder="Enter Email"
-                      style="width: 300px; margin-right: 1em;" />
-                    <button type="submit" class="btn btn-outline-secondary font-weight-bold">Login</button>
+                <a href="/register"></a> <!-- Register button display-->
+                  <div class="form-group mr-2">
+                    <button type="submit" class="btn btn-outline-primary btn-lg font-weight-light">Register</button>
                   </div>
-                </form>
+                <a href="/login"></a> <!-- Login button display-->
+                  <div class="form-group mr-2">
+                    <button type="submit" class="btn btn-outline-primary btn-lg font-weight-light">Login</button>
+                  </div>
                 <% } %>
             </div>
         </div>
