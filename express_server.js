@@ -40,7 +40,6 @@ app.get("/login", (req, res) => {
 
 app.post("/login", (req, res) => {
   const { email } = req.body;
-  console.log('email is', email);
   const { error, user } = authenticateUser(email, users);
 
   if (error) {
@@ -79,7 +78,6 @@ app.get("/urls/new", (req, res) => {
 });
 
 app.post("/urls", (req, res) => {
-  console.log(req.body); // this will log POST request to the console
   const shortURL = Math.random().toString(36).slice(2, 8);
   const longURL = req.body.longURL;
   urlDatabase[shortURL] = longURL;

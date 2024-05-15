@@ -13,19 +13,19 @@
       <div class="container">
         <div class="row justify-content-end">
           <% if (user) { %>
-            <a class="nav-item nav-link">Logged in as: <%= user.email %> User!</a>
+            <a class="nav-item nav-link">Logged in as: <%= user.email %></a>
             <form class="form-inline" action="/logout" method="POST">
             <button type="submit" class="btn btn-outline-secondary">Logout</button>
             </form>
             <div class="col-auto">
               <% } else { %>
-                <a href="/register"></a> <!-- Register button display-->
+                <a href="/register"> <!-- Register button display-->
                   <div class="form-group mr-2">
-                    <button type="submit" class="btn btn-outline-primary btn-lg font-weight-light">Register</button>
+                    <button type="submit" class="btn btn-outline-primary font-weight-light">Register</button></a>
                   </div>
-                <a href="/login"></a> <!-- Login button display-->
+                <a href="/login"> <!-- Login button display-->
                   <div class="form-group mr-2">
-                    <button type="submit" class="btn btn-outline-primary btn-lg font-weight-light">Login</button>
+                    <button type="submit" class="btn btn-outline-primary font-weight-light">Login</button></a>
                   </div>
                 <% } %>
             </div>
