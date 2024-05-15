@@ -12,8 +12,8 @@
       </div>
       <div class="container">
         <div class="row justify-content-end">
-          <% if (username) { %>
-            <a class="nav-item nav-link">Logged in as: <%= username %> User!</a>
+          <% if (user) { %>
+            <a class="nav-item nav-link">Logged in as: <%= user.email %> User!</a>
             <form class="form-inline" action="/logout" method="POST">
             <button type="submit" class="btn btn-outline-secondary">Logout</button>
             </form>
@@ -21,7 +21,7 @@
               <% } else { %>
                 <form class="form-inline" action="/login" method="POST">
                   <div class="form-group mb-2">
-                    <input class="form-control" type="text" name="username" placeholder="Enter Username"
+                    <input class="form-control" type="email" name="email" placeholder="Enter Email"
                       style="width: 300px; margin-right: 1em;" />
                     <button type="submit" class="btn btn-outline-secondary font-weight-bold">Login</button>
                   </div>
