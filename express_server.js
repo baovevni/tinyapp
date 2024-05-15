@@ -1,29 +1,13 @@
 const express = require("express");
 const cookieParser = require('cookie-parser');
+const urlDatabase = require("./data/urlDatabase");
+const users = require("./data/users");
 const app = express();
 const PORT = 8080;
 
 app.set("view engine", "ejs");
 app.use(express.urlencoded({ extended: true }));
 app.use(cookieParser());
-
-const urlDatabase = {
-  b2xVn2: "http://www.lighthouselabs.ca",
-  "9sm5xK": "http://www.google.com",
-};
-
-const users = {
-  abc1A: {
-    id: "abc",
-    email: "user@example.com",// ebarducov@gmail.com
-    password: "purple-monkey-dinosaur",
-  },
-  def2B: {
-    id: "def",
-    email: "user2@example.com",
-    password: "dishwasher-funk",
-  },
-};
 
 app.get("/register", (req, res) => {
   res.render("register");
@@ -47,7 +31,7 @@ app.post("/register", (req, res) => {
       res.cookie('user_id', id);
       res.redirect("/urls");
     } else {
-      return res.status(403).send('Email already exist');
+      return res.status(400).send('Email already exist');
     }
   }
 });
