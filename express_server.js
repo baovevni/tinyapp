@@ -2,6 +2,7 @@ const express = require("express");
 const cookieParser = require('cookie-parser');
 const urlDatabase = require("./data/urlDatabase");
 const users = require("./data/users");
+const { fetchUserByEmail, createUser, authenticateUser } = require("./helpers/userHelpers");
 const app = express();
 const PORT = 8080;
 
@@ -14,38 +15,38 @@ app.get("/register", (req, res) => {
 });
 
 app.post("/register", (req, res) => {
-  const email = req.body.email;
-  const password = req.body.password;
+  const { email, password } = req.body;
 
-  const id = Math.random().toString(36).slice(2, 8);
-
-  const newUser = {
-    id,
-    email,
-    password
+  // Check if email or password is empty
+  if (!email || !password) {
+    return res.status(400).send('Email or password cannot be empty');
   }
 
-  for (const userId in users){
-    if (users[userId].email !== email) {
-      users[id] = newUser;
-      res.cookie('user_id', id);
-      res.redirect("/urls");
-    } else {
-      return res.status(400).send('Email already exist');
-    }
+  // Attempt to create a user
+  const newUser = createUser(email, password, users);
+
+  if (!newUser) {
+    // means user already exists or there was an error
+    return res.status(400).send('Email already exists');
   }
+
+  // Assuming the user is successfully created
+  res.cookie('user_id', newUser.id);
+  res.redirect("/urls");
 });
 
 app.post("/login", (req, res) => {
-  const { email, password } = req.body; // Extract email and password from request body
-  for (const userId in users) { // Iterate over the users object
-    if (users[userId].email === email) { // Check credentials
-      res.cookie('user_id', userId);
-      
-      return res.redirect("/urls");
-    }
-  }
-  return res.status(403).send('Email or password is incorrect');
+  const { email } = req.body;
+  console.log('email is', email);
+  const { error, user } = authenticateUser(email, users);
+
+  if (error) {
+    console.log(error);
+    return res.status(403).send(error);
+  } 
+
+  res.cookie("user_id", user.id);  
+  return res.redirect("/urls");
 });
 
 app.get("/", (req, res) => {
