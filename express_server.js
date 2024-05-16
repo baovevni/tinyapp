@@ -46,16 +46,15 @@ app.post("/register", (req, res) => {
 
   // Attempt to create a user
   const newUser = createUser(email, hashedPassword, users);
-  console.log(users);
 
   if (!newUser) {
     // means user already exists or there was an error
     return res.status(400).send('Email already exists');
+  } else {
+    // Assuming the user is successfully created
+    req.session.user_id = newUser.id;
+    res.redirect("/urls");
   }
-
-  // Assuming the user is successfully created
-  req.session.user_id = newUser.id;
-  res.redirect("/urls");
 });
 
 
@@ -73,10 +72,10 @@ app.post("/login", (req, res) => {
   if (error) {
     console.log(error);
     return res.status(403).send(error);
+  } else {
+    req.session.user_id = user.id;
+    return res.redirect("/urls");
   }
-
-  req.session.user_id = user.id;
-  return res.redirect("/urls");
 });
 
 app.get("/", (req, res) => {
