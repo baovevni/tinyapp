@@ -1,3 +1,5 @@
+const bcrypt = require("bcryptjs");
+
 const fetchUrlsForUser = (userId, urlDatabase) => {
   let userUrls = {};
 
@@ -52,7 +54,9 @@ const authenticateUser = (email, password, users) => {
   }
 
   // Check if the password matches
-  if (user.password !== password) {
+  const result = bcrypt.compareSync(password, user.password);
+
+  if (!result) {
     return { error: "Email or password is incorrect", user: null };
   }
 

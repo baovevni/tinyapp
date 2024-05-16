@@ -1,5 +1,6 @@
 const express = require("express");
 const cookieParser = require('cookie-parser');
+const bcrypt = require("bcryptjs");
 const urlDatabase = require("./data/urlDatabase");
 const users = require("./data/users");
 const { fetchUrlsForUser, fetchUserByEmail, createUser, authenticateUser, fetchUserById } = require("./helpers/userHelpers");
@@ -30,14 +31,18 @@ app.get("/register", (req, res) => {
 
 app.post("/register", (req, res) => {
   const { email, password } = req.body;
+  
 
   // Check if email or password is empty
   if (!email || !password) {
     return res.status(400).send('Email or password cannot be empty');
   }
 
+  const hashedPassword = bcrypt.hashSync(password, 10);
+
   // Attempt to create a user
-  const newUser = createUser(email, password, users);
+  const newUser = createUser(email, hashedPassword, users);
+  console.log(users);
 
   if (!newUser) {
     // means user already exists or there was an error

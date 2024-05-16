@@ -2,12 +2,12 @@ const users = {
   abc1A: {
     id: "abc1A",
     email: "user@example.com",// ebarducov@gmail.com
-    password: "purple-monkey-dinosaur",
+    password: "$2a$10$yjDx5ZSEC4GJbNQItinzDeTnu6RIrn8FAPKNH/Lx8wuYsv9jtXvEy",
   },
   def2B: {
     id: "def2B",
     email: "user2@example.com",
-    password: "dishwasher-funk",
+    password: "$2a$10$yjDx5ZSEC4GJbNQItinzDeTnu6RIrn8FAPKNH/Lx8wuYsv9jtXvEy",
   },
 };
 
