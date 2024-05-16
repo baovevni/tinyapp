@@ -23,6 +23,6 @@ describe('getUserByEmail', function() {
   });
   it('should return undefined with a non-existent email', function() {
     const user = fetchUserByEmail("john@example.com", testUsers)
-    assert.isUndefined(user)
+    assert.isNull(user)
   });
 });

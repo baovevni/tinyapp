@@ -8,7 +8,8 @@ const app = express();
 const PORT = 8080;
 
 app.set("view engine", "ejs");
-app.use(express.urlencoded({ extended: true }));
+app.use(express.urlencoded({ extended: false }));
+app.use(express.json());
 app.use(cookieSession({
   name: 'session',
   keys: ['qWeRtY!@#456'],
@@ -20,7 +21,7 @@ app.use((req, res, next) => {
   const whiteList = ["/", "/login", "/register"]
 
   if (error && !whiteList.includes(req.url)) {
-    return res.redirect("/");
+    return res.redirect("/login");
   }
   
   return next();
@@ -79,7 +80,7 @@ app.post("/login", (req, res) => {
 });
 
 app.get("/", (req, res) => {
-  res.send("Hello!");
+  res.redirect("/login");
 });
 
 app.get("/urls.json", (req, res) => {
@@ -149,7 +150,7 @@ app.get("/urls/:id", (req, res) => {
   const longURL = userUrls[shortURL];   // If the URL exists in the user's URLs, fetch longURL
 
   if (!urlDatabase[shortURL] || urlDatabase[shortURL].userId !== userId) { // Check if the shortURL belongs to the user's URLs
-    res.status(403).send("You don't have permission to view this URL or it Doesn't exist.");
+    return res.status(404).send("You don't have permission to view this URL or it Doesn't exist.");
   }
 
   const templateVars = { shortURL, longURL, user };
