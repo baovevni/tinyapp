@@ -1,3 +1,14 @@
+const fetchUrlsForUser = (userId, urlDatabase) => {
+  let userUrls = {};
+
+  for (let urlId in urlDatabase) {
+    if (urlDatabase[urlId].userId === userId) {
+      userUrls[urlId] = urlDatabase[urlId].longURL;
+    }
+  }
+  return userUrls;
+};
+
 const fetchUserByEmail = (email, users) => {
   for (const userId in users) {
     if (users[userId].email === email) {
@@ -48,4 +59,4 @@ const authenticateUser = (email, password, users) => {
   return { error: null, user };
 };
 
-module.exports = { fetchUserByEmail, createUser, authenticateUser, fetchUserById };
+module.exports = { fetchUrlsForUser, fetchUserByEmail, createUser, authenticateUser, fetchUserById };

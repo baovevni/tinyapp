@@ -2,7 +2,7 @@ const express = require("express");
 const cookieParser = require('cookie-parser');
 const urlDatabase = require("./data/urlDatabase");
 const users = require("./data/users");
-const { fetchUserByEmail, createUser, authenticateUser, fetchUserById } = require("./helpers/userHelpers");
+const { fetchUrlsForUser, fetchUserByEmail, createUser, authenticateUser, fetchUserById } = require("./helpers/userHelpers");
 const app = express();
 const PORT = 8080;
 
@@ -22,7 +22,7 @@ app.use((req, res, next) => {
 });
 
 app.get("/register", (req, res) => {
-  if (!fetchUserById(req.cookies.user_id, users)){
+  if (!fetchUserById(req.cookies.user_id, users)) {
     return res.render("register");
   }
   return res.redirect("/urls")
@@ -51,7 +51,7 @@ app.post("/register", (req, res) => {
 
 
 app.get("/login", (req, res) => {
-  if (!fetchUserById(req.cookies.user_id, users)){
+  if (!fetchUserById(req.cookies.user_id, users)) {
     return res.render("login");
   }
   return res.redirect("/urls")
@@ -81,62 +81,98 @@ app.get("/urls.json", (req, res) => {
 app.get("/urls", (req, res) => {
   const userId = req.cookies.user_id;
   const user = fetchUserById(userId, users);
+
+  if (!user) {  // Handle the case where there is no user logged in.
+    return res.send("Please login or register to view URLs.");
+  }
+
+  const userUrls = fetchUrlsForUser(userId, urlDatabase);
+
   const templateVars = {
     user: user,
-    urls: urlDatabase
+    urls: userUrls
   };
+  console.log('UserUrls', userUrls);
   res.render("urls_index", templateVars);
 });
 
 app.get("/urls/new", (req, res) => {
-    const userId = req.cookies.user_id;
-    // Check if the user_id from the cookie exists in the users database
-    const user = fetchUserById(userId, users);
-    if (user) { // If the user exists (meaning they are logged in)
+  const userId = req.cookies.user_id;
+
+  const user = fetchUserById(userId, users); // Check if the user_id from the cookie exists in the users database
+  if (user) {                                // If the user exists (meaning they are logged in)
     const templateVars = { user: user }
-    // The user is logged in, render  /urls/new
-    return res.render("urls_new", templateVars);
+
+    return res.render("urls_new", templateVars); // The user is logged in, render  /urls/new
   }
-  // User is not logged in, render the login page
-  return res.redirect("/login")
+  return res.redirect("/login") // User is not logged in, render the login page
 });
 
 
 app.post("/urls", (req, res) => {
   const userId = req.cookies.user_id;
-    // Check if the user_id from the cookie exists in the users database
-    const user = fetchUserById(userId, users);
-    if (user) { // If the user exists (meaning they are logged in)
+
+  const user = fetchUserById(userId, users); // Check if the user_id from the cookie exists in the users database
+  if (!user) {                                // If the user does not exist (not logged in)
+    return res.status(403).send("Restriced Area. User must be logged in")
+  }
+
   const shortURL = Math.random().toString(36).slice(2, 8);
   const longURL = req.body.longURL;
-  urlDatabase[shortURL] = longURL;
-  res.redirect(`/urls/${shortURL}`);
-    }
-    res.status(403).send("Restriced Area. User must be logged in")
-    return;
+
+  urlDatabase[shortURL] = {
+    longURL: longURL,
+    userId: userId // Storing the ID of the user who created this URL
+  };
+  console.log(urlDatabase);
+  res.redirect(`/urls/${shortURL}`); // Redirect to the page showing the new URL
 });
 
 app.get("/urls/:id", (req, res) => {
-  const id = req.params.id;
-  if (!urlDatabase[id]) {
-    res.status(404).send(`${id} does not exist`);
-    return;
+  const userId = req.cookies.user_id; // Retrieve the user's ID from cookies
+  const user = fetchUserById(userId, users);
+
+  if (!userId || !user) {                                // If the user does not exist (not logged in)
+    return res.status(403).send("Restriced Area. User must be logged in")
   }
-  const templateVars = { id: req.params.id, longURL: urlDatabase[req.params.id], user: users[req.cookies['user_id']] };
+
+  const userUrls = fetchUrlsForUser(userId, urlDatabase);
+  const shortURL = req.params.id;
+
+  if (!urlDatabase[shortURL] || urlDatabase[shortURL].userId !== userId) { // Check if the shortURL belongs to the user's URLs
+    res.status(403).send("You don't have permission to view this URL or it Doesn't exist.");
+  }
+
+  const longURL = userUrls[shortURL];   // If the URL exists in the user's URLs, fetch longURL
+
+  const templateVars = { shortURL, longURL, user };
   res.render("urls_show", templateVars);
 });
 
 app.post("/urls/:id", (req, res) => {
+  const userId = req.cookies.user_id; // Retrieve the user's ID from cookies
+  const user = fetchUserById(userId, users); // Check if the user_id from the cookie exists in the users database
+
+  if (!userId || !user) {                                // If the user does not exist (not logged in)
+    return res.status(403).send("Restriced Area. User must be logged in")
+  }
+
+  const userUrls = fetchUrlsForUser(userId, urlDatabase);
   const shortURL = req.params.id;
-  const longURL = req.body.longURL;
-  urlDatabase[shortURL] = longURL;
-  res.redirect("/urls");
+
+  if (userUrls[shortURL]) { // Check if the shortURL belongs to the user's URLs
+    const longURL = req.body.longURL;
+    urlDatabase[shortURL].longURL = longURL; // Update URL since it belongs to the user
+    res.redirect("/urls");
+  } else {     // If the URL does not belong to the user, they shouldn't be allowed to edit it
+    res.status(403).send("You don't have permission to edit this URL.");
+  }
 });
 
 app.get("/u/:id", (req, res) => {
   const shortURL = req.params.id;
   const longURL = urlDatabase[req.params.id];
-  if (!urlDatabase[shortURL]){
+  if (!urlDatabase[shortURL]) {
     res.status(404).send(`${shortURL} does not exist`);
     return;
   }
@@ -144,6 +180,17 @@ app.get("/u/:id", (req, res) => {
 });
 
 app.post("/urls/:id/delete", (req, res) => {
+  const shortURL = req.params.id;
+  const userId = req.cookies.user_id; // Retrieve the user's ID from cookies
+  const user = fetchUserById(userId, users); // Check if the user_id from the cookie exists in the users database
+
+  if (!userId || !user) {                                // If the user does not exist (not logged in)
+    return res.status(403).send("Restriced Area. User must be logged in")
+    
+  }
+  if (!urlDatabase[shortURL] || urlDatabase[shortURL].userId !== userId) { // Check if the shortURL belongs to the user's URLs
+    return res.status(403).send("You don't have permission to delete this URL or it Doesn't exist.");
+  }
   delete urlDatabase[req.params.id];
   res.redirect("/urls");
 });
