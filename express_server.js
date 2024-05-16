@@ -17,7 +17,7 @@ app.use((req, res, next) => {
   if (error && !whiteList.includes(req.url)) {
     return res.redirect("/");
   }
-
+  
   return next();
 });
 
@@ -171,12 +171,11 @@ app.post("/urls/:id", (req, res) => {
 
 app.get("/u/:id", (req, res) => {
   const shortURL = req.params.id;
-  const longURL = urlDatabase[req.params.id];
   if (!urlDatabase[shortURL]) {
     res.status(404).send(`${shortURL} does not exist`);
     return;
   }
-  res.redirect(longURL);
+  res.redirect(urlDatabase[shortURL].longURL);
 });
 
 app.post("/urls/:id/delete", (req, res) => {
