@@ -136,12 +136,12 @@ app.get("/urls/:id", (req, res) => {
     return res.status(403).send("Restriced Area. User must be logged in")
   }
 
-  const userUrls = fetchUrlsForUser(userId, urlDatabase);
-  const shortURL = req.params.id;
-
   if (!urlDatabase[shortURL] || urlDatabase[shortURL].userId !== userId) { // Check if the shortURL belongs to the user's URLs
     res.status(403).send("You don't have permission to view this URL or it Doesn't exist.");
   }
+  
+  const userUrls = fetchUrlsForUser(userId, urlDatabase);
+  const shortURL = req.params.id;
 
   const longURL = userUrls[shortURL];   // If the URL exists in the user's URLs, fetch longURL
 
