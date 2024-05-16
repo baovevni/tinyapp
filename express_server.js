@@ -39,15 +39,15 @@ app.get("/login", (req, res) => {
 });
 
 app.post("/login", (req, res) => {
-  const { email } = req.body;
-  const { error, user } = authenticateUser(email, users);
+  const { email, password } = req.body;
+  const { error, user } = authenticateUser(email, password, users);
 
   if (error) {
     console.log(error);
     return res.status(403).send(error);
-  } 
+  }
 
-  res.cookie("user_id", user.id);  
+  res.cookie("user_id", user.id);
   return res.redirect("/urls");
 });
 
@@ -113,8 +113,7 @@ app.post("/urls/:id/delete", (req, res) => {
 
 app.post("/logout", (req, res) => {
   res.clearCookie("user_id");
-  console.log(users);
-  res.redirect("/urls");
+  res.redirect("/login");
 });
 
 app.listen(PORT, () => {

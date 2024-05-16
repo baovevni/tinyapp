@@ -24,11 +24,17 @@ const createUser = (email, password, users) => {
   return newUser; // Return the new user object
 };
 
-const authenticateUser = (email, users) => {
+const authenticateUser = (email, password, users) => {
   const user = fetchUserByEmail(email, users);
-  
+
+  // Check if the user exists
   if (!user) {
     return { error: "User not found", user: null };
+  }
+
+  // Check if the password matches
+  if (user.password !== password) {
+    return { error: "Email or password is incorrect", user: null };
   }
 
   return { error: null, user };
