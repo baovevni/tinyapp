@@ -7,6 +7,14 @@ const fetchUserByEmail = (email, users) => {
   return null; // Return null if user is not found
 };
 
+const fetchUserById = (id, users) => {
+  const user = users[id]
+  if (user)  {
+    return user  // Return the whole user object if found
+  }
+return null; // Return null if user is not found
+};
+
 const createUser = (email, password, users) => {
   const user = fetchUserByEmail(email, users);
   if (user) {
@@ -40,4 +48,4 @@ const authenticateUser = (email, password, users) => {
   return { error: null, user };
 };
 
-module.exports = { fetchUserByEmail, createUser, authenticateUser };
+module.exports = { fetchUserByEmail, createUser, authenticateUser, fetchUserById };
