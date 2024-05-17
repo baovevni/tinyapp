@@ -8,9 +8,9 @@ TinyApp is a full stack web application built with Node and Express that allows 
 
 ## Final Product
 
-!["Screenshot of URLs page"](https://github.com/baovevni/tinyapp/docs/urls-page.png)
-!["Screenshot of error page for non-logged in users"](https://github.com/baovevni/tinyapp/docs/Error-message-for-not-logged-in-user.png)
-!["Screenshot of error page for logged in users"](https://github.com/baovevni/tinyapp/docs/Error-for-logged-in-user.png)
+!["Screenshot of URLs page"](https://github.com/baovevni/tinyapp/blob/main/docs/urls-page.png)
+!["Screenshot of error page for non-logged in users"](https://github.com/baovevni/tinyapp/blob/main/docs/Error-message-for-not-logged-in-user.png)
+!["Screenshot of error page for logged in users"](https://github.com/baovevni/tinyapp/blob/main/docs/Error-for-logged-in-user.png)
 
 
 ## Dependencies
