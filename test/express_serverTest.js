@@ -22,7 +22,6 @@ describe('Routes and Authentication', () => {
 
   // Test for status code 404 when accessing a non-existent URL
   it('should return status code 404 for accessing a non-existent URL', async () => {
-
     await agent.post('/login')
     .send({
       email: 'user@example.com',

@@ -23,7 +23,7 @@ app.use((req, res, next) => {
   if (error && !whiteList.includes(req.url)) {
     return res.redirect("/login");
   }
-  
+
   return next();
 });
 
@@ -36,11 +36,11 @@ app.get("/register", (req, res) => {
 
 app.post("/register", (req, res) => {
   const { email, password } = req.body;
-  
+
 
   // Check if email or password is empty
   if (!email || !password) {
-    return res.status(400).send('Email or password cannot be empty');
+    return res.status(404).render("error", { error: "Email or password cannot be empty.", user: null });
   }
 
   const hashedPassword = bcrypt.hashSync(password, 10);
@@ -50,7 +50,7 @@ app.post("/register", (req, res) => {
 
   if (!newUser) {
     // means user already exists or there was an error
-    return res.status(400).send('Email already exists');
+    return res.status(404).render("error", { error: "Email already exists.", user: null });
   } else {
     // Assuming the user is successfully created
     req.session.user_id = newUser.id;
@@ -92,7 +92,7 @@ app.get("/urls", (req, res) => {
   const user = fetchUserById(userId, users);
 
   if (!user) {  // Handle the case where there is no user logged in.
-    return res.send("Please login or register to view URLs.");
+    return res.render("error", { error: "Please login or register to view URLs.", user: null });
   }
 
   const userUrls = fetchUrlsForUser(userId, urlDatabase);
@@ -123,7 +123,7 @@ app.post("/urls", (req, res) => {
 
   const user = fetchUserById(userId, users); // Check if the user_id from the cookie exists in the users database
   if (!user) {                                // If the user does not exist (not logged in)
-    return res.status(403).send("Restriced Area. User must be logged in")
+    return res.status(403).render("error", { error: "Restriced Area. User must be logged in", user: null });
   }
 
   const shortURL = Math.random().toString(36).slice(2, 8);
@@ -142,15 +142,15 @@ app.get("/urls/:id", (req, res) => {
   const user = fetchUserById(userId, users);
 
   if (!userId || !user) {                                // If the user does not exist (not logged in)
-    return res.status(403).send("Restriced Area. User must be logged in")
+    return res.status(403).render("error", { error: "Restricted Area. User must be logged in.", user: null });
   }
-  
+
   const userUrls = fetchUrlsForUser(userId, urlDatabase);
   const shortURL = req.params.id;
   const longURL = userUrls[shortURL];   // If the URL exists in the user's URLs, fetch longURL
 
   if (!urlDatabase[shortURL] || urlDatabase[shortURL].userId !== userId) { // Check if the shortURL belongs to the user's URLs
-    return res.status(404).send("You don't have permission to view this URL or it Doesn't exist.");
+    return res.status(404).render("error", { error: "You don't have permission to view this URL or it Doesn't exist.", user: userId });
   }
 
   const templateVars = { shortURL, longURL, user };
@@ -162,7 +162,7 @@ app.post("/urls/:id", (req, res) => {
   const user = fetchUserById(userId, users); // Check if the user_id from the cookie exists in the users database
 
   if (!userId || !user) {                                // If the user does not exist (not logged in)
-    return res.status(403).send("Restriced Area. User must be logged in")
+    return res.status(403).render("error", { error: "Restriced Area. User must be logged in.", user: null });
   }
 
   const userUrls = fetchUrlsForUser(userId, urlDatabase);
@@ -173,7 +173,7 @@ app.post("/urls/:id", (req, res) => {
     urlDatabase[shortURL].longURL = longURL; // Update URL since it belongs to the user
     res.redirect("/urls");
   } else {     // If the URL does not belong to the user, they shouldn't be allowed to edit it
-    res.status(403).send("You don't have permission to edit this URL.");
+    return res.status(403).render("error", { error: "You don't have permission to edit this URL.", user: req.session.user_id });
   }
 });
 
@@ -181,8 +181,7 @@ app.get("/u/:id", (req, res) => {
   const shortURL = req.params.id;
 
   if (!urlDatabase[shortURL]) {
-    res.status(404).send(`${shortURL} does not exist`);
-    return;
+    return res.status(404).render("error", { error: `${shortURL} does not exist`, user: req.session.user_id  });
   }
   res.redirect(urlDatabase[shortURL].longURL);
 });
@@ -193,11 +192,10 @@ app.post("/urls/:id/delete", (req, res) => {
   const user = fetchUserById(userId, users); // Check if the user_id from the cookie exists in the users database
 
   if (!userId || !user) {                                // If the user does not exist (not logged in)
-    return res.status(403).send("Restriced Area. User must be logged in")
-    
+    return res.status(403).render("error", { error: "Restriced Area. User must be logged in.", user: null });
   }
   if (!urlDatabase[shortURL] || urlDatabase[shortURL].userId !== userId) { // Check if the shortURL belongs to the user's URLs
-    return res.status(403).send("You don't have permission to delete this URL or it Doesn't exist.");
+    return res.status(403).render("error", { error: "You don't have permission to delete this URL or it Doesn't exist." });
   }
   delete urlDatabase[req.params.id];
   res.redirect("/urls");
