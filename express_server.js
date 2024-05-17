@@ -1,5 +1,5 @@
 const express = require("express");
-const cookieSession = require('cookie-session')
+const cookieSession = require('cookie-session');
 const bcrypt = require("bcryptjs");
 const urlDatabase = require("./data/urlDatabase");
 const users = require("./data/users");
@@ -13,12 +13,12 @@ app.use(express.json());
 app.use(cookieSession({
   name: 'session',
   keys: ['qWeRtY!@#456'],
-}))
+}));
 
 
 app.use((req, res, next) => {
-  const error = fetchUserByEmail(req.session.user_id, users)
-  const whiteList = ["/", "/login", "/register"]
+  const error = fetchUserByEmail(req.session.user_id, users);
+  const whiteList = ["/", "/login", "/register"];
 
   if (error && !whiteList.includes(req.url)) {
     return res.redirect("/login");
@@ -31,7 +31,7 @@ app.get("/register", (req, res) => {
   if (!fetchUserById(req.session.user_id, users)) {
     return res.render("register");
   }
-  return res.redirect("/urls")
+  return res.redirect("/urls");
 });
 
 app.post("/register", (req, res) => {
@@ -63,7 +63,7 @@ app.get("/login", (req, res) => {
   if (!fetchUserById(req.session.user_id, users)) {
     return res.render("login");
   }
-  return res.redirect("/urls")
+  return res.redirect("/urls");
 });
 
 app.post("/login", (req, res) => {
@@ -110,11 +110,11 @@ app.get("/urls/new", (req, res) => {
 
   const user = fetchUserById(userId, users); // Check if the user_id from the cookie exists in the users database
   if (user) {                                // If the user exists (meaning they are logged in)
-    const templateVars = { user: user }
+    const templateVars = { user: user };
 
     return res.render("urls_new", templateVars); // The user is logged in, render  /urls/new
   }
-  return res.redirect("/login") // User is not logged in, render the login page
+  return res.redirect("/login"); // User is not logged in, render the login page
 });
 
 

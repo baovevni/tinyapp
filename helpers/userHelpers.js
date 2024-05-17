@@ -21,11 +21,11 @@ const fetchUserByEmail = (email, users) => {
 };
 
 const fetchUserById = (id, users) => {
-  const user = users[id]
+  const user = users[id];
   if (user)  {
-    return user  // Return the whole user object if found
+    return user;  // Return the whole user object if found
   }
-return null; // Return null if user is not found
+  return null; // Return null if user is not found
 };
 
 const createUser = (email, password, users) => {
