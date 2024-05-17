@@ -71,8 +71,7 @@ app.post("/login", (req, res) => {
   const { error, user } = authenticateUser(email, password, users);
 
   if (error) {
-    console.log(error);
-    return res.status(403).send(error);
+    return res.status(403).render("error", { error, user: null });
   } else {
     req.session.user_id = user.id;
     return res.redirect("/urls");
@@ -101,7 +100,6 @@ app.get("/urls", (req, res) => {
     user: user,
     urls: userUrls
   };
-  console.log('UserUrls', userUrls);
   res.render("urls_index", templateVars);
 });
 
@@ -133,7 +131,6 @@ app.post("/urls", (req, res) => {
     longURL: longURL,
     userId: userId // Storing the ID of the user who created this URL
   };
-  console.log(urlDatabase);
   res.redirect(`/urls/${shortURL}`); // Redirect to the page showing the new URL
 });
 
